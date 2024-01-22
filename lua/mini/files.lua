@@ -1260,6 +1260,7 @@ H.normalize_opts = function(explorer_opts, opts)
 	opts = vim.tbl_deep_extend("force", H.get_config(), explorer_opts or {}, opts or {})
 	opts.content.filter = opts.content.filter or MiniFiles.default_filter
 	opts.content.prefix = opts.content.prefix or MiniFiles.default_prefix
+	opts.content.highlight = opts.content.highlight or MiniFiles.default_highlight
 	opts.content.sort = opts.content.sort or MiniFiles.default_sort
 
 	return opts
