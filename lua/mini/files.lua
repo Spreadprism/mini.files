@@ -1071,8 +1071,8 @@ MiniFiles.default_highlight = function(fs_entry)
 	if fs_entry.fs_type == "directory" then
 		return "MiniFilesDirectory"
 	else
-		local path = fs_entry.path
-		local handle = io.popen("git status -i -s -u | grep " .. path)
+		local name = fs_entry.name
+		local handle = io.popen("git status -i -s -u | grep " .. name)
 		if handle == nil then
 			return "MiniFilesFile"
 		end
