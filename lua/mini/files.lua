@@ -592,6 +592,8 @@ MiniFiles.config = {
     filter = nil,
     -- What prefix to show to the left of file system entry
     prefix = nil,
+    -- what highlight to use for file system entry
+    highlight = nil,
     -- In which order to show file system entries
     sort = nil,
   },
@@ -1065,6 +1067,10 @@ MiniFiles.default_prefix = function(fs_entry)
 	return (icon or "") .. " ", hl or "MiniFilesFile"
 end
 
+MiniFiles.default_highlight = function(fs_entry)
+	return fs_entry.fs_type == "directory" and "MiniFilesDirectory" or "MiniFilesGitignore"
+end
+
 --- Default sort of file system entries
 ---
 --- Sort directories and files separately (alphabetically ignoring case) and
@@ -1154,6 +1160,7 @@ H.setup_config = function(config)
 	vim.validate({
 		["content.filter"] = { config.content.filter, "function", true },
 		["content.prefix"] = { config.content.prefix, "function", true },
+		["content.highlight"] = { config.content.highlight, "function", true },
 		["content.sort"] = { config.content.sort, "function", true },
 
 		["mappings.close"] = { config.mappings.close, "string" },
@@ -2099,12 +2106,13 @@ H.buffer_update_directory = function(buf_id, path, opts)
 	local line_format = "/%0" .. path_width .. "d/%s/%s"
 
 	local prefix_fun = opts.content.prefix
+	local highlight_fun = opts.content.highlight
 	for _, entry in ipairs(fs_entries) do
 		local prefix, hl = prefix_fun(entry)
 		prefix, hl = prefix or "", hl or ""
 		table.insert(lines, string.format(line_format, H.path_index[entry.path], prefix, entry.name))
 		table.insert(icon_hl, hl)
-		table.insert(name_hl, entry.fs_type == "directory" and "MiniFilesDirectory" or "MiniFilesGitignore")
+		table.insert(name_hl, highlight_fun(entry))
 	end
 
 	-- Set lines
