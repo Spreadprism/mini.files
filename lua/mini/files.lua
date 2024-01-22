@@ -1068,7 +1068,7 @@ MiniFiles.default_prefix = function(fs_entry)
 end
 
 MiniFiles.default_highlight = function(fs_entry)
-	return fs_entry.fs_type == "directory" and "MiniFilesDirectory" or "MiniFilesGitignore"
+	return fs_entry.fs_type == "directory" and "MiniFilesDirectory" or "MiniFilesFile"
 end
 
 --- Default sort of file system entries
