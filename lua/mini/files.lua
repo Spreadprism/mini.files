@@ -1068,7 +1068,27 @@ MiniFiles.default_prefix = function(fs_entry)
 end
 
 MiniFiles.default_highlight = function(fs_entry)
-	return fs_entry.fs_type == "directory" and "MiniFilesDirectory" or "MiniFilesFile"
+	if fs_entry.fs_type == "directory" then
+		return "MiniFilesDirectory"
+	else
+		local path = fs_entry.path
+		local handle = io.popen("git status -i -s -u | grep " .. path)
+		if handle == nil then
+			return "MiniFilesFile"
+		end
+		local result = {}
+		for line in handle:lines() do
+			table.insert(result, line)
+		end
+		---@diagnostic disable-next-line: missing-parameter
+		handle.close()
+
+		if #result > 0 and result[1]:sub(1, 1) == "!" then
+			return "MiniFilesGitignore"
+		else
+			return "MiniFilesFile"
+		end
+	end
 end
 
 --- Default sort of file system entries
@@ -1114,6 +1134,9 @@ H.ns_id = {
 H.timers = {
 	focus = vim.loop.new_timer(),
 }
+
+-- git info
+H.git = {}
 
 -- Index of all visited files
 H.path_index = {}
@@ -1336,6 +1359,7 @@ H.explorer_refresh = function(explorer, opts)
 	if #explorer.branch == 0 then
 		return
 	end
+
 	opts = opts or {}
 
 	-- Update cursor data in shown views. Do this prior to buffer updates for
